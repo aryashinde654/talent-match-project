@@ -29,7 +29,7 @@ const JobsPage = () => {
         setLocationFilter={setLocationFilter}
       />
       
-      <FeaturedJobs searchQuery={search} locationFilter={locationFilter} />
+      <FeaturedJobs searchQuery={searchQuery} locationFilter={locationFilter} />
       
       <Footer />
     </div>
