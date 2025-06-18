@@ -1,5 +1,6 @@
 
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Briefcase, Search } from 'lucide-react';
 
 const Hero = () => {
@@ -19,12 +20,16 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-              Browse Jobs
-              <ArrowRight className="ml-2 w-5 h-5" />
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" asChild>
+              <Link to="/jobs">
+                Browse Jobs
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
             </Button>
-            <Button size="lg" variant="outline">
-              Post a Job
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/post-job">
+                Post a Job
+              </Link>
             </Button>
           </div>
 
