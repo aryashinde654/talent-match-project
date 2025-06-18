@@ -2,8 +2,12 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { MapPin, Clock, Building, Heart } from 'lucide-react';
 import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Job {
   id: string;
@@ -24,6 +28,8 @@ interface JobCardProps {
 
 const JobCard = ({ job }: JobCardProps) => {
   const [isSaved, setIsSaved] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleSave = () => {
     setIsSaved(!isSaved);
@@ -31,9 +37,24 @@ const JobCard = ({ job }: JobCardProps) => {
     console.log(`Job ${job.id} ${isSaved ? 'unsaved' : 'saved'}`);
   };
 
-  const handleApply = () => {
-    // Add your apply logic here
-    console.log(`Applied to job ${job.id}`);
+  const handleApply = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const applicationData = {
+      jobId: job.id,
+      fullName: formData.get('fullName'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      coverLetter: formData.get('coverLetter')
+    };
+    
+    console.log('Application submitted:', applicationData);
+    setIsDialogOpen(false);
+    
+    toast({
+      title: "Application Submitted!",
+      description: `Your application for ${job.title} at ${job.company} has been submitted successfully.`,
+    });
   };
 
   return (
@@ -96,12 +117,47 @@ const JobCard = ({ job }: JobCardProps) => {
 
         <div className="flex items-center justify-between pt-4 border-t border-slate-100">
           <span className="font-semibold text-slate-800">{job.salaryRange}</span>
-          <Button 
-            onClick={handleApply}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-          >
-            Apply Now
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                Apply Now
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Apply for {job.title}</DialogTitle>
+                <DialogDescription>
+                  Submit your application for this position at {job.company}.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleApply} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input id="fullName" name="fullName" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" name="email" type="email" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input id="phone" name="phone" type="tel" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="coverLetter">Cover Letter</Label>
+                  <textarea 
+                    id="coverLetter" 
+                    name="coverLetter"
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Tell us why you're interested in this position..."
+                  />
+                </div>
+                <Button type="submit" className="w-full">
+                  Submit Application
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardContent>
     </Card>
